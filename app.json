@@ -1,0 +1,61 @@
+{
+  "name": "Ancore",
+  "description": "A high-performance WhatsApp bot built with Node.js and Baileys",
+  "keywords": ["nodejs", "whatsapp", "bot"],
+  "success_url": "/",
+  "stack": "container",
+  "env": {
+    "SESSION_ID": {
+      "description": "Session ID for WhatsApp bot",
+      "required": true,
+      "value": "ANCORE_"
+    },
+    "PREFIX": {
+      "description": "Command prefix",
+      "required": false,
+      "value": "."
+    },
+    "STICKER_PACKNAME": {
+      "description": "Sticker pack name",
+      "required": false,
+      "value": "💙°CoReX°💙"
+    },
+    "DATABASE_URL": {
+      "description": "PostgreSQL database URL",
+      "required": true,
+      "value": ""
+    },
+    "LANGUAGE": {
+      "description": "Default language",
+      "required": false,
+      "value": "en"
+    },
+    "TIMEZONE": {
+      "description": "Default timezone",
+      "required": false,
+      "value": "Africa/Lagos"
+    },
+    "ALWAYS_ONLINE": {
+      "description": "Show bot number last seen as online",
+      "required": false,
+      "value": "false"
+    },
+    "LOG_MSG": {
+      "description": "Show WhatsApp messages in log",
+      "required": false,
+      "value": "false"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:basic"
+    }
+  ],
+  "buildpacks": [],
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  }
+}
