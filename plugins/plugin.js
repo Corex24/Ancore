@@ -8,28 +8,28 @@ module.exports = {
   tags: ['owner'],
   run: async (m, sock, args) => {
     const url = args[0]
-    if (!url || !url.startsWith('http')) {
+    if (!url || !url.endsWith('.js')) {
       return sock.sendMessage(m.key.remoteJid, {
-        text: '❌ Please provide a valid raw plugin URL (.js file).'
+        text: '❌ Provide a valid direct URL to a plugin `.js` file.'
       }, { quoted: m })
     }
 
     try {
-      const pluginCode = (await axios.get(url)).data
-      const fileName = 'plugin_' + Date.now() + '.js'
-      const filePath = path.join(__dirname, fileName)
+      const response = await axios.get(url)
+      const code = response.data
+      const filename = `plugin_${Date.now()}.js`
+      const filepath = path.join(__dirname, filename)
 
-      fs.writeFileSync(filePath, pluginCode)
+      fs.writeFileSync(filepath, code)
 
-      return sock.sendMessage(m.key.remoteJid, {
-        text: `✅ Plugin installed as: ${fileName}`
+      await sock.sendMessage(m.key.remoteJid, {
+        text: `✅ Plugin installed as \`${filename}\`. Restart bot to activate.`
       }, { quoted: m })
-
-    } catch (err) {
-      console.error(err)
-      return sock.sendMessage(m.key.remoteJid, {
-        text: '❌ Failed to fetch or save plugin.'
+    } catch (e) {
+      console.error(e)
+      await sock.sendMessage(m.key.remoteJid, {
+        text: '❌ Failed to install plugin.'
       }, { quoted: m })
     }
   }
-                              }
+}
