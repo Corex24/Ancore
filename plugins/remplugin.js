@@ -9,20 +9,20 @@ module.exports = {
     const file = args[0]
     if (!file || !file.endsWith('.js')) {
       return sock.sendMessage(m.key.remoteJid, {
-        text: '⚠️ Please specify a plugin filename to remove.'
+        text: '❌ Please provide a valid plugin filename to remove.'
       }, { quoted: m })
     }
 
-    const pluginPath = path.join(__dirname, file)
-    if (!fs.existsSync(pluginPath)) {
+    const filepath = path.join(__dirname, file)
+    if (!fs.existsSync(filepath)) {
       return sock.sendMessage(m.key.remoteJid, {
         text: '❌ Plugin not found.'
       }, { quoted: m })
     }
 
-    fs.unlinkSync(pluginPath)
-    return sock.sendMessage(m.key.remoteJid, {
-      text: `✅ Plugin \`${file}\` removed successfully.`
+    fs.unlinkSync(filepath)
+    await sock.sendMessage(m.key.remoteJid, {
+      text: `✅ Plugin \`${file}\` removed. Restart bot to unload.`
     }, { quoted: m })
   }
 }
