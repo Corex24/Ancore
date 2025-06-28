@@ -1,15 +1,19 @@
-const { writeFileSync, unlinkSync } = require('fs')
+const fs = require('fs')
 const { tmpdir } = require('os')
 const { join } = require('path')
 const { fromBuffer } = require('file-type')
+const ffmpeg = require('fluent-ffmpeg')
+const ffmpegPath = require('ffmpeg-static')
 const { toSticker } = require('@adiwajshing/ffmpeg')
+
+ffmpeg.setFfmpegPath(ffmpegPath)
 
 module.exports = {
   name: 'sticker',
   command: ['sticker', 's'],
   tags: ['media'],
   run: async (m, sock) => {
-    const quoted = m.message.extendedTextMessage?.contextInfo?.quotedMessage
+    const quoted = m.message?.extendedTextMessage?.contextInfo?.quotedMessage
     const mime = quoted?.imageMessage
       ? 'image'
       : quoted?.videoMessage
@@ -31,15 +35,15 @@ module.exports = {
     const inputPath = join(tmpdir(), `ancore_input.${fileType.ext}`)
     const outputPath = join(tmpdir(), `ancore_sticker.webp`)
 
-    writeFileSync(inputPath, buffer)
+    fs.writeFileSync(inputPath, buffer)
 
     try {
       await toSticker(inputPath, outputPath, {
-        pack: '💙°CoReX°💙',
+        pack: '💙°CoReX °💙',
         author: 'Ancore'
       })
 
-      const stickerBuffer = require('fs').readFileSync(outputPath)
+      const stickerBuffer = fs.readFileSync(outputPath)
       await sock.sendMessage(m.key.remoteJid, { sticker: stickerBuffer }, { quoted: m })
 
     } catch (err) {
@@ -48,8 +52,8 @@ module.exports = {
         text: '❌ Error creating sticker.'
       }, { quoted: m })
     } finally {
-      unlinkSync(inputPath)
-      unlinkSync(outputPath)
+      fs.unlinkSync(inputPath)
+      fs.unlinkSync(outputPath)
     }
   }
-                                    }
+}
