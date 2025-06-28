@@ -1,14 +1,16 @@
 {
-  "name": "ancore-bot",
+  "name": "Ancore",
   "version": "1.0.0",
-  "description": "Ancore WhatsApp bot",
+  "description": "ANCORE WhatsApp Bot by Corex",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "author": "Corex",
+  "license": "MIT",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.0",
-    "dotenv": "^16.0.3",
-    "pg": "^8.8.0"
+    "dotenv": "^16.3.1",
+    "pino": "^8.17.0"
   }
 }
