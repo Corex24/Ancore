@@ -1,0 +1,11 @@
+{
+  "prefix": "Prefix",
+  "user": "User",
+  "time": "Time",
+  "date": "Date",
+  "version": "Version",
+  "plugins": "Plugins",
+  "uptime": "Uptime",
+  "platform": "Platform",
+  "tz": "Timezone"
+}
