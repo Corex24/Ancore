@@ -1,17 +1,14 @@
 {
-  "name": "Ancore",
+  "name": "ancore-bot",
   "version": "1.0.0",
-  "description": "A high-performance WhatsApp bot built with Node.js and Baileys",
-  "main": "app.js",
+  "description": "Ancore WhatsApp bot",
+  "main": "index.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "Corex",
-  "license": "MIT",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.0",
-    "pg": "^8.7.3",
-    "dotenv": "^10.0.0"
+    "dotenv": "^16.0.3",
+    "pg": "^8.8.0"
   }
 }
