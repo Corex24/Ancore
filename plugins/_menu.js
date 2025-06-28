@@ -7,7 +7,7 @@ const {
   getPlatform,
   bot,
   lang,
-} = require('../lib/');
+} = require('../lib/')
 
 bot(
   {
@@ -17,42 +17,36 @@ bot(
   async (message, match, ctx) => {
     const sorted = ctx.commands
       .slice()
-      .sort((a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : 0));
+      .sort((a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : 0))
 
-    const [date, time] = getDate();
+    const [date, time] = getDate()
 
-    const CMD_HELP = [
-      lang.plugins.menu.help.format(
-        ctx.PREFIX,
-        message.pushName,
-        time,
-        date.toLocaleString('en', { weekday: 'long' }),
-        date.toLocaleDateString('hi'),
-        ctx.VERSION,
-        ctx.pluginsCount,
-        getRam(),
-        getUptime('t'),
-        getPlatform()
-      ),
-      '╭────────────────',
-    ];
+    const helpMsg = [
+      `╭─〔 *ANCORE HELP PANEL* 〕`,
+      `│ *Hi ${message.pushName}!*`,
+      `│`,
+      `│ 🕒 *Time:* ${time}`,
+      `│ 📆 *Date:* ${date.toLocaleDateString()}`,
+      `│ 🗓️ *Day:* ${date.toLocaleString('en', { weekday: 'long' })}`,
+      `│ 🧠 *Version:* ${ctx.VERSION}`,
+      `│ ⚙️ *Total Commands:* ${ctx.pluginsCount}`,
+      `│ 📦 *RAM:* ${getRam()}`,
+      `│ ⏱️ *Uptime:* ${getUptime('t')}`,
+      `│ 🖥️ *Platform:* ${getPlatform()}`,
+      `╰───────────────────◉\n`,
+    ]
 
     sorted.forEach((command, i) => {
       if (!command.dontAddCommandList && command.pattern !== undefined) {
-        CMD_HELP.push(
-          `│ ${i + 1} ${addSpace(i + 1, sorted.length)}${textToStylist(
-            command.name.toUpperCase(),
-            'mono'
-          )}`
-        );
+        helpMsg.push(
+          ` ${i + 1}. ${addSpace(i + 1, sorted.length)}${textToStylist(command.name.toUpperCase(), 'mono')}`
+        )
       }
-    });
+    })
 
-    CMD_HELP.push('╰────────────────');
-
-    return await message.send(CMD_HELP.join('\n'));
+    await message.send(helpMsg.join('\n'))
   }
-);
+)
 
 bot(
   {
@@ -62,16 +56,21 @@ bot(
   async (message, match, ctx) => {
     const sorted = ctx.commands
       .slice()
-      .sort((a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : 0));
+      .sort((a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : 0))
 
-    const commandList = sorted
-      .filter((command) => !command.dontAddCommandList && command.pattern !== undefined)
-      .map((command) => `- *${command.name}*\n${command.desc}\n`)
-      .join('\n');
+    const listMsg = ['╭─〔 *ANCORE COMMAND LIST* 〕\n']
 
-    await message.send(commandList);
+    sorted
+      .filter((cmd) => !cmd.dontAddCommandList && cmd.pattern)
+      .forEach((cmd) => {
+        listMsg.push(`*${textToStylist(cmd.name, 'mono')}*\n${cmd.desc || '_No description available._'}\n`)
+      })
+
+    listMsg.push('╰───────────────────◉')
+
+    await message.send(listMsg.join('\n'))
   }
-);
+)
 
 bot(
   {
@@ -79,58 +78,53 @@ bot(
     dontAddCommandList: true,
   },
   async (message, match, ctx) => {
-    const commands = {};
+    const commands = {}
 
     ctx.commands.forEach((command) => {
       if (!command.dontAddCommandList && command.pattern !== undefined) {
-        const cmdType = command.type?.toLowerCase?.() || 'misc';
-        if (!commands[cmdType]) commands[cmdType] = [];
-
-        const cmd = command.name.trim();
-        const isDisabled = command.active === false;
-        commands[cmdType].push(isDisabled ? `${cmd} [disabled]` : cmd);
+        let type = command.type?.toLowerCase() || 'misc'
+        if (!commands[type]) commands[type] = []
+        const name = command.name?.trim() || 'unknown'
+        commands[type].push(command.active === false ? `${name} [disabled]` : name)
       }
-    });
+    })
 
-    const sortedCommandKeys = Object.keys(commands).sort();
-    const [date, time] = getDate();
+    const [date, time] = getDate()
+    const categories = Object.keys(commands).sort()
 
-    let msg = lang.plugins.menu.menu.format(
-      ctx.PREFIX,
-      message.pushName,
-      time,
-      date.toLocaleString('en', { weekday: 'long' }),
-      date.toLocaleDateString('hi'),
-      ctx.VERSION,
-      ctx.pluginsCount,
-      getRam(),
-      getUptime('t'),
-      getPlatform()
-    );
+    let menuText = [
+      `╭─〔 *ANCORE BOT MENU* 〕`,
+      `│ *Hello ${message.pushName}!*`,
+      `│`,
+      `│ ⏰ *Time:* ${time}`,
+      `│ 📆 *Date:* ${date.toLocaleDateString()}`,
+      `│ 📊 *Commands:* ${ctx.pluginsCount}`,
+      `│ 🧠 *Version:* ${ctx.VERSION}`,
+      `│ ⏱️ *Uptime:* ${getUptime('t')}`,
+      `│ 🖥️ *Platform:* ${getPlatform()}`,
+      `╰───────────────────◉\n`,
+    ]
 
-    msg += '\n';
-
-    if (match && commands[match]) {
-      msg += ` ╭─💙 ${textToStylist(match.toLowerCase(), 'smallcaps')} 💙\n`;
-      commands[match]
-        .sort((a, b) => a.localeCompare(b))
-        .forEach((plugin) => {
-          msg += ` │ ${textToStylist(plugin.toUpperCase(), 'mono')}\n`;
-        });
-      msg += ` ╰─────────────────`;
-      return await message.send(msg);
+    if (match && commands[match.toLowerCase()]) {
+      const group = commands[match.toLowerCase()]
+      menuText.push(`╭─❏ *${textToStylist(match.toUpperCase(), 'smallcaps')} Commands*`)
+      group.sort().forEach((cmd) => {
+        menuText.push(`│ ${textToStylist(cmd.toUpperCase(), 'mono')}`)
+      })
+      menuText.push('╰───────────────────◉')
+      return await message.send(menuText.join('\n'))
     }
 
-    for (const command of sortedCommandKeys) {
-      msg += ` ╭─❏ ${textToStylist(command.toLowerCase(), 'smallcaps')} ❏\n`;
-      commands[command]
-        .sort((a, b) => a.localeCompare(b))
-        .forEach((plugin) => {
-          msg += ` │ ${textToStylist(plugin.toUpperCase(), 'mono')}\n`;
-        });
-      msg += ` ╰─────────────────\n`;
+    for (const type of categories) {
+      menuText.push(`╭─❏ *${textToStylist(type.toUpperCase(), 'smallcaps')}*`)
+      commands[type]
+        .sort()
+        .forEach((cmd) => {
+          menuText.push(`│ ${textToStylist(cmd.toUpperCase(), 'mono')}`)
+        })
+      menuText.push('╰───────────────────◉\n')
     }
 
-    await message.send(msg.trim());
+    await message.send(menuText.join('\n'))
   }
-);
+)
