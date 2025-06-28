@@ -1,16 +1,24 @@
 {
   "name": "Ancore",
   "version": "1.0.0",
-  "description": "ANCORE WhatsApp Bot by Corex",
+  "description": "ANCORE WhatsApp MD Bot powered by Corex",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "keywords": ["whatsapp", "bot", "baileys", "corex", "ancore"],
   "author": "Corex",
   "license": "MIT",
   "dependencies": {
+    "@adiwajshing/ffmpeg": "^1.1.0",
+    "@hapi/boom": "^10.0.1",
     "@whiskeysockets/baileys": "^6.7.0",
     "dotenv": "^16.3.1",
+    "express": "^4.19.2",
+    "ffmpeg-static": "^4.4.0",
+    "file-type": "^18.0.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "moment-timezone": "^0.5.44",
     "pino": "^8.17.0"
   }
 }
