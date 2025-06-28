@@ -6,12 +6,9 @@ const {
   DisconnectReason
 } = require('@whiskeysockets/baileys')
 const pino = require('pino')
-const fs = require('fs')
-const path = require('path')
-const moment = require('moment-timezone')
 const config = require('./config')
+const { loadPlugins } = require('./lib/pluginLoader')
 
-// Start the ANCORE bot
 const startAncore = async () => {
   const { state, saveCreds } = await useMultiFileAuthState('sessions')
   const sock = makeWASocket({
@@ -20,6 +17,8 @@ const startAncore = async () => {
     printQRInTerminal: true,
     browser: ['ANCORE-MD', 'Corex', '1.0.0']
   })
+
+  loadPlugins() // Load all plugins on start
 
   sock.ev.on('creds.update', saveCreds)
 
@@ -37,41 +36,30 @@ const startAncore = async () => {
     }
   })
 
-  // Load language
-  const lang = require(`./lang/${config.LANGUAGE || 'en'}.json`)
-
-  // Load all plugins from /plugins
-  const pluginFolder = path.join(__dirname, 'plugins')
-  const plugins = []
-
-  fs.readdirSync(pluginFolder).forEach(file => {
-    if (file.endsWith('.js')) {
-      const plugin = require(path.join(pluginFolder, file))
-      plugins.push(plugin)
-    }
-  })
-
-  // Listen for messages
   sock.ev.on('messages.upsert', async ({ messages }) => {
     const m = messages[0]
     if (!m.message || m.key.fromMe) return
 
-    const text = m.message.conversation || m.message.extendedTextMessage?.text || ''
-    if (!text.startsWith('.')) return
+    const text =
+      m.message.conversation ||
+      m.message.extendedTextMessage?.text ||
+      ''
+    const [cmd, ...args] = text.trim().split(/\s+/)
 
-    const [cmd, ...args] = text.slice(1).trim().split(' ')
-    const plugin = plugins.find(p => p.command.includes(cmd))
+    if (!cmd.startsWith('.')) return
 
-    if (plugin) {
-      await sock.sendMessage(m.key.remoteJid, { react: { text: '💙', key: m.key } })
-      try {
-        await plugin.run(m, sock, args)
-        await sock.sendMessage(m.key.remoteJid, { react: { text: '✅', key: m.key } })
-      } catch (err) {
-        console.error(err)
-        await sock.sendMessage(m.key.remoteJid, {
-          text: `---ERROR REPORT---\nVersion : 1.0.0\nMessage : ${text}\nError   : ${err.message}\nJid     : ${m.key.remoteJid}\nCommand : ${cmd}\nPlatform: Render`
-        }, { quoted: m })
+    for (const plugin of global.plugins) {
+      if (plugin.command.includes(cmd.slice(1))) {
+        try {
+          await sock.sendMessage(m.key.remoteJid, { react: { text: '💙', key: m.key } })
+          await plugin.run(m, sock, args)
+          await sock.sendMessage(m.key.remoteJid, { react: { text: '✅️', key: m.key } })
+        } catch (err) {
+          console.error(err)
+          await sock.sendMessage(m.key.remoteJid, {
+            text: `---ERROR REPORT---\nVersion : 1.0.0\nMessage : ${cmd}\nError   : ${err.message}\nJid     : ${m.key.remoteJid}\nCommand : ${cmd.slice(1)}\nPlatform: Render`
+          }, { quoted: m })
+        }
       }
     }
   })
