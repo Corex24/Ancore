@@ -1,17 +1,34 @@
-require('dotenv').config();
-const { Client, LocalAuth } = require('@whiskeysockets/baileys');
+require('dotenv').config()
+const { Boom } = require('@hapi/boom')
+const makeWASocket = require('@whiskeysockets/baileys').default
+const { useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys')
+const pino = require('pino')
+const config = require('./config')
 
-const client = new Client({
-  auth: new LocalAuth(),
-  printQRInTerminal: true,
-});
+const startAncore = async () => {
+  const { state, saveCreds } = await useMultiFileAuthState('sessions')
+  const sock = makeWASocket({
+    auth: state,
+    logger: pino({ level: 'silent' }),
+    printQRInTerminal: true,
+    browser: ['ANCORE-MD', 'Corex', '1.0.0']
+  })
 
-client.on('qr', (qr) => {
-  console.log('QR code:', qr);
-});
+  sock.ev.on('creds.update', saveCreds)
 
-client.on('ready', () => {
-  console.log('Client is ready!');
-});
+  sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
+    if (connection === 'close') {
+      const reason = new Boom(lastDisconnect?.error)?.output.statusCode
+      if (reason === DisconnectReason.loggedOut) {
+        console.log('🔌 Session logged out.')
+      } else {
+        console.log('🔁 Reconnecting...')
+        startAncore()
+      }
+    } else if (connection === 'open') {
+      console.log('✅ ANCORE Bot Connected.')
+    }
+  })
+}
 
-client.initialize();
+startAncore()
