@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ancore-bot
+    env: node
+    plan: free
+    buildCommand: yarn install
+    startCommand: yarn start
+    autoDeploy: true
+    branch: main
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TZ
+        value: Africa/Lagos
