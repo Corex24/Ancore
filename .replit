@@ -1,0 +1,21 @@
+run = "node index.js"
+
+language = "nodejs"
+
+[interpreter]
+command = ["node"]
+
+[env]
+PREFIX = "."
+SESSION_ID = "ANCORE_XXXXXX"
+OWNER_NUMBER = "2348036869669"
+BOT_NAME = "Ancore"
+STICKER_PACKNAME = "💙°CoReX°💙"
+STICKER_AUTHOR_NAME = "Corex"
+LANGUAG = "en"
+CMD_REACTION = "true"
+LOG_MSG = "false"
+SEND_READ = "true"
+WARN_LIMIT = "3"
+DISABLE_START_MESSAGE = "false"
+ALWAYS_ONLINE = "true"
