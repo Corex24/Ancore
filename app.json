@@ -1,0 +1,42 @@
+{
+  "name": "Ancore",
+  "description": "💙 Ancore Multi-Device WhatsApp Bot by Corex using Baileys",
+  "repository": "https://github.com/Corex24/Ancore",
+  "keywords": [
+    "whatsapp-bot",
+    "baileys",
+    "ancore",
+    "multi-device",
+    "corex",
+    "render",
+    "heroku"
+  ],
+  "stack": "container",
+  "env": {
+    "SESSION_ID": {
+      "description": "Enter your session ID here (ANCORE_xxxxx...)",
+      "required": true
+    },
+    "OWNER_NUMBER": {
+      "description": "Your WhatsApp number with country code",
+      "required": true
+    },
+    "STICKER_PACKNAME": {
+      "description": "Sticker pack name",
+      "value": "💙°CoReX°💙"
+    },
+    "PREFIX": {
+      "description": "Command prefix (default: .)",
+      "value": "."
+    },
+    "LANG": {
+      "description": "Default language",
+      "value": "en"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
