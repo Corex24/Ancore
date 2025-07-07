@@ -1,42 +1,129 @@
 {
   "name": "Ancore",
-  "description": "💙 Ancore Multi-Device WhatsApp Bot by Corex using Baileys",
+  "description": "💙 Ancore MD WhatsApp Bot – Fast, Powerful, Plugin-Based",
   "repository": "https://github.com/Corex24/Ancore",
-  "keywords": [
-    "whatsapp-bot",
-    "baileys",
-    "ancore",
-    "multi-device",
-    "corex",
-    "render",
-    "heroku"
-  ],
   "stack": "container",
   "env": {
     "SESSION_ID": {
-      "description": "Enter your session ID here (ANCORE_xxxxx...)",
+      "description": "Your Ancore session ID (e.g. ANCORE_USER123)",
       "required": true
     },
     "OWNER_NUMBER": {
-      "description": "Your WhatsApp number with country code",
-      "required": true
+      "description": "Your WhatsApp number (in international format)",
+      "required": true,
+      "value": "2348036869669"
+    },
+    "BOT_NAME": {
+      "description": "Bot display name",
+      "required": false,
+      "value": "Ancore"
+    },
+    "PREFIX": {
+      "description": "Command prefix (e.g., . ! ? /)",
+      "required": false,
+      "value": "."
     },
     "STICKER_PACKNAME": {
       "description": "Sticker pack name",
+      "required": false,
       "value": "💙°CoReX°💙"
     },
-    "PREFIX": {
-      "description": "Command prefix (default: .)",
-      "value": "."
+    "STICKER_AUTHOR_NAME": {
+      "description": "Sticker author",
+      "required": false,
+      "value": "Corex"
     },
-    "LANG": {
-      "description": "Default language",
+    "LANGUAG": {
+      "description": "Default language code (en, es, id, etc.)",
+      "required": false,
       "value": "en"
+    },
+    "ALWAYS_ONLINE": {
+      "description": "Show bot as online always",
+      "required": false,
+      "value": "false"
+    },
+    "LOG_MSG": {
+      "description": "Show incoming messages in console logs",
+      "required": false,
+      "value": "false"
+    },
+    "RMBG_KEY": {
+      "description": "remove.bg API key for background removal",
+      "required": false,
+      "value": "null"
+    },
+    "WARN_LIMIT": {
+      "description": "Maximum warnings before user is kicked",
+      "required": false,
+      "value": "3"
+    },
+    "FORCE_LOGOUT": {
+      "description": "Force logout Web session on crash",
+      "required": false,
+      "value": "false"
+    },
+    "DISABLE_BOT": {
+      "description": "JIDs to disable bot for (comma-separated)",
+      "required": false,
+      "value": "null"
+    },
+    "ANTILINK_MSG": {
+      "description": "Message when link is detected in group",
+      "required": false,
+      "value": "_Antilink Detected &mention kicked_"
+    },
+    "ANTISPAM_MSG": {
+      "description": "Message when spam is detected",
+      "required": false,
+      "value": "_Antispam Detected &mention kicked_"
+    },
+    "ANTIWORDS_MSG": {
+      "description": "Message when banned word is detected",
+      "required": false,
+      "value": "_AntiWord Detected &mention kicked_"
+    },
+    "ANTIWORDS": {
+      "description": "Comma-separated list of banned words",
+      "required": false,
+      "value": "stupid,idiot,spam"
+    },
+    "AUTO_STATUS_VIEW": {
+      "description": "Automatically view status updates",
+      "required": false,
+      "value": "false"
+    },
+    "SEND_READ": {
+      "description": "Mark messages as read when replied",
+      "required": false,
+      "value": "true"
+    },
+    "AJOIN": {
+      "description": "Accept group join requests",
+      "required": false,
+      "value": "true"
+    },
+    "DISABLE_START_MESSAGE": {
+      "description": "Suppress startup success message",
+      "required": false,
+      "value": "false"
+    },
+    "PERSONAL_MESSAGE": {
+      "description": "Auto message in personal chat",
+      "required": false,
+      "value": "I'm back online 💙"
     }
   },
-  "buildpacks": [
-    {
-      "url": "heroku/nodejs"
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "basic"
     }
-  ]
-}
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:hobby-dev"
+    }
+  ],
+  "buildpacks": []
+  }
