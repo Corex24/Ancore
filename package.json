@@ -18,6 +18,11 @@
     "whatsapp-md",
     "chatbot"
   ],
+  "resolutions": {
+    "puppeteer": "false",
+    "sleep": "false",
+    "deasync": "false"
+  },
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.18",
     "axios": "^1.6.8",
