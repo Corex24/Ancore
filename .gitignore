@@ -1,0 +1,75 @@
+# 📁 Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# 📁 Environment
+.env
+.env.local
+.env.*.local
+
+# 📁 OS
+.DS_Store
+Thumbs.db
+
+# 📁 Logs
+logs/
+*.log
+*.gz
+*.sqlite
+*.db
+
+# 📁 App build
+dist/
+build/
+.cache/
+lib/config.js
+
+# 📁 TypeScript
+*.tsbuildinfo
+
+# 📁 Docker
+docker-compose.override.yml
+docker.env
+
+# 📁 Sessions
+session.data.json
+session.*
+auth_info*
+baileys_store.json
+baileys_auth_info.json
+creds.json
+*.sqlite
+
+# 📁 VS Code
+.vscode/
+
+# 📁 Obfuscated
+lib/**/*.obf.js
+*.obf.js
+
+# 📁 PM2 Logs
+pids
+*.pid
+*.seed
+*.seed.js
+
+# 📁 Optional
+temp/
+tmp/
+__pycache__/
+repl_modules/
+
+# 📁 Plugins
+eplugins/
+plugins/temp/
+plugins/*.bak
+plugins/*.tmp
+
+# 📁 Media
+media/uploads/
+downloads/
+tempmedia/
+media/processed/
