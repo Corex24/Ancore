@@ -1,8 +1,14 @@
-FROM node:20-alpine
-WORKDIR /app
-RUN apk add --no-cache ffmpeg libc6-compat curl git python3 build-base vips-dev bash
-COPY package.json yarn.lock ./
-RUN yarn install --network-timeout 600000
-COPY . .
-EXPOSE 3000
-CMD ["node", "index.js"]
+#!/bin/bash
+# 🚀 Build & Run Script for Ancore WhatsApp Bot using Docker
+
+# 🧼 Clean up old image
+docker rm -f ancore-bot >/dev/null 2>&1
+docker rmi ancore-bot >/dev/null 2>&1
+
+# 🛠️ Build Docker image
+echo "🔨 Building Ancore Docker image..."
+docker build -t ancore-bot .
+
+# 🚀 Run the bot container
+echo "🚀 Starting Ancore WhatsApp Bot..."
+docker run --name ancore-bot --env-file .env ancore-bot
