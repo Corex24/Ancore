@@ -2,6 +2,7 @@
   "name": "ancore",
   "version": "1.0.0",
   "description": "Ancore WhatsApp MD bot made by Corex with 💙",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node .",
