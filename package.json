@@ -38,7 +38,7 @@
     "quick.db": "^9.1.7",
     "scrape-yt": "^1.4.8",
     "semaphore": "^1.1.0",
-    "sharp": "^0.34.2",
+    "sharp": "^0.33.5",
     "simple-git": "^3.28.0",
     "speedtest-net": "^2.2.0",
     "translate-google": "^1.5.0",
@@ -48,7 +48,6 @@
     "whatsapp-web.js": "^1.31.0",
     "ws": "^8.18.3",
     "yargs": "^18.0.0",
-    "yt-search": "^2.13.1",
     "ytdl-core": "^4.11.5",
     "qrcode": "^1.5.4",
     "random-words": "^1.2.0",
@@ -56,21 +55,15 @@
     "request": "^2.88.2",
     "satori": "^0.10.1",
     "sequelize": "^6.37.3",
-    "sharp": "^0.33.5",
     "spinnies": "^0.5.1",
     "steno": "^1.0.0",
     "string-similarity": "^4.0.4",
     "terminal-kit": "^3.2.1",
     "translate-google-api": "^2.3.0",
     "ua-parser-js": "^1.0.35",
-    "uuid": "^9.0.1",
     "vercel": "^30.2.1",
     "web-streams-polyfill": "^3.3.1",
-    "whatsapp-web.js": "^1.23.0",
-    "ws": "^8.16.0",
-    "xml2js": "^0.6.2",
-    "yargs": "^17.7.2",
-    "yt-search": "^2.10.4"
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",
@@ -78,7 +71,7 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
   "keywords": [
     "whatsapp-bot",
     "baileys",
@@ -95,4 +88,4 @@
     "chatbot",
     "multi-device"
   ]
-
+    }
