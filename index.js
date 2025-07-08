@@ -1,46 +1,40 @@
-import { default as makeWASocket, useMultiFileAuthState, DisconnectReason } from '@whiskeysockets/baileys';
-import { Boom } from '@hapi/boom';
-import P from 'pino';
-import dotenv from 'dotenv';
+import { makeWASocket, useMultiFileAuthState, DisconnectReason, Browsers } from '@whiskeysockets/baileys'
+import QRCode from 'qrcode'
+import NodeCache from 'node-cache'
+import { Boom } from '@hapi/boom'
 
-dotenv.config();
-
-const logger = P({ level: 'silent' });
+const groupCache = new NodeCache()
+const phoneNumber = process.env.OWNER_NUMBER || '2348036869669' // customize as needed
 
 async function startAncore() {
-  const { state, saveCreds } = await useMultiFileAuthState('./session');
+  const { state, saveCreds } = await useMultiFileAuthState('./auth_info_baileys')
 
   const sock = makeWASocket({
-    logger,
-    printQRInTerminal: true,
     auth: state,
-    browser: ['Ancore', 'Chrome', '120.0.0.0']
-  });
+    printQRInTerminal: true,
+    browser: Browsers.macOS('AncoreBot'),
+    cachedGroupMetadata: async (jid) => groupCache.get(jid)
+  })
 
-  sock.ev.on('creds.update', saveCreds);
+  sock.ev.on('creds.update', saveCreds)
 
-  sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
+  sock.ev.on('connection.update', async ({ connection, lastDisconnect, qr }) => {
+    if (qr) {
+      console.log(await QRCode.toString(qr, { type: 'terminal', small: true }))
+    }
+
     if (connection === 'close') {
-      const shouldReconnect =
-        new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-
-      logger.warn(`🔌 Disconnected. Reconnect? ${shouldReconnect}`);
-
-      if (shouldReconnect) startAncore();
-    } else if (connection === 'open') {
-      logger.info('✅ Connected to WhatsApp as Ancore');
+      const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut
+      console.log('🔌 Disconnected. Reconnect?', shouldReconnect)
+      if (shouldReconnect) {
+        startAncore()
+      }
     }
-  });
 
-  sock.ev.on('messages.upsert', async ({ messages }) => {
-    const msg = messages[0];
-    if (!msg.message || msg.key.fromMe) return;
-
-    const text = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
-    if (text.toLowerCase() === '.ping') {
-      await sock.sendMessage(msg.key.remoteJid, { text: '🏓 Pong!' }, { quoted: msg });
+    if (connection === 'open') {
+      console.log('✅ Connected to WhatsApp as Ancore')
     }
-  });
+  })
 }
 
-startAncore();
+startAncore()
