@@ -1,54 +1,48 @@
-// 🚀 Ancore WhatsApp Bot 
-// Powered by Safari WebSocket Engine | Made with 💙 by Corex
+import makeWASocket, { DisconnectReason, useMultiFileAuthState } from '@whiskeysockets/baileys';
+import { Boom } from '@hapi/boom';
+import P from 'pino';
+import fs from 'fs';
+import path from 'path';
+import dotenv from 'dotenv';
 
-import makeWASocket, { DisconnectReason, fetchLatestBaileysVersion, useMultiFileAuthState, makeCacheableSignalKeyStore } from '@whiskeysockets/baileys';
+dotenv.config();
 
-import { Boom } from '@hapi/boom'; import pino from 'pino'; import { join } from 'path'; import { readdirSync } from 'fs'; import logger from './lib/logger.js'; import { pluginLoader } from './lib/plugin.js'; import './lib/lang.js';
+const logger = P({ level: 'silent' });
 
-const SESSION_ID = process.env.SESSION_ID || 'ANCORE_SAFARI';
+async function startAncore() {
+  const { state, saveCreds } = await useMultiFileAuthState('./session');
 
-async function startAncore() { const { version } = await fetchLatestBaileysVersion(); const { state, saveCreds } = await useMultiFileAuthState(join('./store/sessions', SESSION_ID));
+  const sock = makeWASocket({
+    logger,
+    printQRInTerminal: true,
+    auth: state,
+    browser: ['Ancore', 'Chrome', '120.0.0.0']
+  });
 
-const sock = makeWASocket({ version, printQRInTerminal: true, browser: ['Ancore Safari', 'Safari', '1.0.0'], auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })) }, logger: pino({ level: 'silent' }), markOnlineOnConnect: true, generateHighQualityLinkPreview: true, syncFullHistory: false, getMessage: async () => ({ conversation: 'Ancore • Made by Corex 💙' }) });
+  sock.ev.on('creds.update', saveCreds);
 
-sock.ev.on('creds.update', saveCreds);
+  sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
+    if (connection === 'close') {
+      const shouldReconnect =
+        new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
 
-sock.ev.on('connection.update', ({ connection, lastDisconnect }) => { if (connection === 'close') { const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut; logger.warn(🔌 Disconnected. Reconnect? ${shouldReconnect}); if (shouldReconnect) startAncore(); } else if (connection === 'open') { logger.success('✅ Connected to WhatsApp as Ancore'); } });
+      logger.warn(`🔌 Disconnected. Reconnect? ${shouldReconnect}`);
 
-pluginLoader(sock);
-
-sock.ev.on('messages.upsert', async ({ messages }) => { const m = messages[0]; if (!m?.message || m.key?.remoteJid === 'status@broadcast') return;
-
-try {
-  const handlerPath = join('./plugins');
-  const files = readdirSync(handlerPath).filter(file => file.endsWith('.js'));
-  for (const file of files) {
-    const { command, handler, fromMe, group } = await import(`${handlerPath}/${file}?v=${Date.now()}`);
-
-    const body = m.message?.conversation || m.message?.extendedTextMessage?.text || '';
-    const prefix = '.';
-    const text = body.startsWith(prefix) ? body.slice(1) : '';
-    const match = text.split(' ')[0].toLowerCase();
-
-    if (command.includes(match)) {
-      if (fromMe && !m.key.fromMe) return;
-      if (group && !m.key.remoteJid?.endsWith('@g.us')) return;
-
-      await sock.sendMessage(m.key.remoteJid, { react: { text: '💙', key: m.key } });
-
-      await handler(sock, m, text.slice(match.length).trim());
-
-      await sock.sendMessage(m.key.remoteJid, { react: { text: '✅️', key: m.key } });
-      await sock.sendMessage(m.key.remoteJid, { react: { text: '', key: m.key } });
+      if (shouldReconnect) startAncore();
+    } else if (connection === 'open') {
+      logger.info('✅ Connected to WhatsApp as Ancore');
     }
-  }
-} catch (err) {
-  await sock.sendMessage(m.key.remoteJid, { react: { text: '❌️', key: m.key } });
-  await sock.sendMessage(m.key.remoteJid, { react: { text: '', key: m.key } });
-  logger.error('❌ Message handler error:', err);
+  });
+
+  sock.ev.on('messages.upsert', async ({ messages, type }) => {
+    const msg = messages[0];
+    if (!msg.message || msg.key.fromMe) return;
+
+    const text = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
+    if (text.toLowerCase() === '.ping') {
+      await sock.sendMessage(msg.key.remoteJid, { text: '🏓 Pong!' }, { quoted: msg });
+    }
+  });
 }
 
-}); }
-
 startAncore();
-
